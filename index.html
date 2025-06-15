@@ -1,0 +1,311 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Play, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const Gallery: React.FC = () => {
+  const [selectedItem, setSelectedItem] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [videoError, setVideoError] = useState<{[key: number]: boolean}>({});
+
+  const galleryItems = [
+    {
+      id: 1,
+      type: 'image',
+      src: 'https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&w=800',
+      category: 'beaches',
+      title: 'Radhanagar Beach',
+      description: 'One of Asia\'s most beautiful beaches'
+    },
+    {
+      id: 2,
+      type: 'image',
+      src: 'https://images.pexels.com/photos/544970/pexels-photo-544970.jpeg?auto=compress&cs=tinysrgb&w=800',
+      category: 'underwater',
+      title: 'Scuba Diving Adventure',
+      description: 'Explore vibrant coral reefs'
+    },
+    {
+      id: 3,
+      type: 'video',
+      src: '/assets/videos/drone-footage.mp4',
+      poster: 'https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg?auto=compress&cs=tinysrgb&w=800',
+      category: 'aerial',
+      title: 'Aerial View of Havelock',
+      description: 'Breathtaking drone footage'
+    },
+    {
+      id: 4,
+      type: 'image',
+      src: 'https://images.pexels.com/photos/1820770/pexels-photo-1820770.jpeg?auto=compress&cs=tinysrgb&w=800',
+      category: 'sunset',
+      title: 'Tropical Sunset',
+      description: 'Golden hour magic'
+    },
+    {
+      id: 5,
+      type: 'image',
+      src: 'https://images.pexels.com/photos/1386604/pexels-photo-1386604.jpeg?auto=compress&cs=tinysrgb&w=800',
+      category: 'activities',
+      title: 'Water Sports',
+      description: 'Thrilling adventure activities'
+    },
+    {
+      id: 6,
+      type: 'image',
+      src: 'https://images.pexels.com/photos/1630304/pexels-photo-1630304.jpeg?auto=compress&cs=tinysrgb&w=800',
+      category: 'beaches',
+      title: 'Crystal Clear Waters',
+      description: 'Pristine tropical paradise'
+    },
+    {
+      id: 7,
+      type: 'image',
+      src: 'https://images.pexels.com/photos/189349/pexels-photo-189349.jpeg?auto=compress&cs=tinysrgb&w=800',
+      category: 'underwater',
+      title: 'Marine Life',
+      description: 'Diverse underwater ecosystem'
+    },
+    {
+      id: 8,
+      type: 'image',
+      src: 'https://images.pexels.com/photos/457882/pexels-photo-457882.jpeg?auto=compress&cs=tinysrgb&w=800',
+      category: 'sunset',
+      title: 'Beach Sunset',
+      description: 'Romantic evening views'
+    },
+    {
+      id: 9,
+      type: 'image',
+      src: 'https://images.pexels.com/photos/1139040/pexels-photo-1139040.jpeg?auto=compress&cs=tinysrgb&w=800',
+      category: 'activities',
+      title: 'Island Exploration',
+      description: 'Discover hidden gems'
+    }
+  ];
+
+  const categories = [
+    { id: 'all', name: 'All' },
+    { id: 'beaches', name: 'Beaches' },
+    { id: 'underwater', name: 'Underwater' },
+    { id: 'sunset', name: 'Sunsets' },
+    { id: 'activities', name: 'Activities' },
+    { id: 'aerial', name: 'Aerial' }
+  ];
+
+  const filteredItems = selectedCategory === 'all' 
+    ? galleryItems 
+    : galleryItems.filter(item => item.category === selectedCategory);
+
+  const openFullscreen = (id: number) => {
+    setSelectedItem(id);
+  };
+
+  const closeFullscreen = () => {
+    setSelectedItem(null);
+  };
+
+  const navigateItem = (direction: 'prev' | 'next') => {
+    if (selectedItem === null) return;
+    
+    const currentIndex = filteredItems.findIndex(item => item.id === selectedItem);
+    let newIndex;
+    
+    if (direction === 'prev') {
+      newIndex = currentIndex > 0 ? currentIndex - 1 : filteredItems.length - 1;
+    } else {
+      newIndex = currentIndex < filteredItems.length - 1 ? currentIndex + 1 : 0;
+    }
+    
+    setSelectedItem(filteredItems[newIndex].id);
+  };
+
+  const handleVideoError = (itemId: number) => {
+    setVideoError(prev => ({ ...prev, [itemId]: true }));
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
+      {/* Hero Section */}
+      <section className="relative py-20 bg-gradient-to-br from-ocean-900 via-ocean-800 to-palm-900">
+        <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg')] bg-cover bg-center opacity-20" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-5xl md:text-6xl font-editorial font-bold text-white mb-6"
+          >
+            Visual Stories
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-xl text-white/90 max-w-3xl mx-auto"
+          >
+            Immerse yourself in the breathtaking beauty of Andaman through our curated collection of images and videos
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Category Filter */}
+      <section className="py-8 bg-white dark:bg-gray-800 sticky top-16 z-40 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap justify-center gap-4">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
+                  selectedCategory === category.id
+                    ? 'bg-sunset-500 text-white shadow-lg'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-sunset-100 dark:hover:bg-sunset-900/20'
+                }`}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery Grid */}
+      <section className="py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            layout
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            <AnimatePresence>
+              {filteredItems.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  className="relative group cursor-pointer overflow-hidden rounded-xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-2xl"
+                  onClick={() => openFullscreen(item.id)}
+                >
+                  <div className="aspect-[4/3] overflow-hidden">
+                    {item.type === 'video' && !videoError[item.id] ? (
+                      <div className="relative w-full h-full">
+                        <img
+                          src={item.poster}
+                          alt={item.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                          <div className="bg-white/20 backdrop-blur-sm p-4 rounded-full">
+                            <Play size={32} className="text-white ml-1" />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <img
+                        src={item.type === 'video' ? item.poster : item.src}
+                        alt={item.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    )}
+                  </div>
+                  
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                      <h3 className="text-lg font-semibold mb-1">{item.title}</h3>
+                      <p className="text-sm text-white/80">{item.description}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Fullscreen Modal */}
+      <AnimatePresence>
+        {selectedItem && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
+            onClick={closeFullscreen}
+          >
+            <button
+              onClick={closeFullscreen}
+              className="absolute top-4 right-4 text-white hover:text-sunset-500 z-10"
+            >
+              <X size={32} />
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigateItem('prev');
+              }}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-sunset-500 z-10"
+            >
+              <ChevronLeft size={48} />
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigateItem('next');
+              }}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-sunset-500 z-10"
+            >
+              <ChevronRight size={48} />
+            </button>
+
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+              className="max-w-6xl max-h-[90vh] w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {(() => {
+                const item = galleryItems.find(item => item.id === selectedItem);
+                if (!item) return null;
+
+                return (
+                  <div className="relative">
+                    {item.type === 'video' && !videoError[item.id] ? (
+                      <video
+                        controls
+                        autoPlay
+                        className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+                        onError={() => handleVideoError(item.id)}
+                      >
+                        <source src={item.src} type="video/mp4" />
+                      </video>
+                    ) : (
+                      <img
+                        src={item.type === 'video' ? item.poster : item.src}
+                        alt={item.title}
+                        className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+                      />
+                    )}
+                    <div className="mt-4 text-center text-white">
+                      <h3 className="text-2xl font-semibold mb-2">{item.title}</h3>
+                      <p className="text-white/80">{item.description}</p>
+                      {item.type === 'video' && videoError[item.id] && (
+                        <p className="text-yellow-400 text-sm mt-2">Video unavailable - showing preview image</p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export de
